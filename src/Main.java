@@ -2,15 +2,13 @@ import models.Cart;
 import models.Customer;
 import models.Product;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Scanner;
+import java.util.*;
+import java.util.stream.Stream;
 
 public class Main {
     public static void main(String[] args) {
         var store = createStore();
-        Scanner reader = new Scanner(System.in);
+        var reader = new Scanner(System.in);
 
         System.out.println("""
         ************************************
@@ -49,7 +47,8 @@ public class Main {
                     3 - Clear cart
                     4 - Checkout
                     5 - See details customer and credit card
-                    6 - Finish
+                    6 - Show shop ordered by name
+                    7 - Finish
                     """);
 
             option = reader.nextInt();
@@ -72,13 +71,16 @@ public class Main {
                     System.out.println(customer);
                     break;
                 case 6:
+                    System.out.println(store.stream().sorted(Comparator.comparing(Product::name)).toList());
+                    break;
+                case 7:
                     checkout(customer, cart);
                     System.out.println("See you later!");
                     break;
                 default:
                     System.out.println("Invalid option. Try again!");
             }
-        } while (option != 6);
+        } while (option != 7);
     }
 
     public static void chooseProduct(List<Product> store, Scanner reader, Cart cart) {
@@ -116,7 +118,9 @@ public class Main {
         Product pants = new Product("Pants", 90.0);
         Product cap = new Product("Cap", 70.0);
 
-        return Arrays.asList(shoes, tShirt, pants, cap);
+        return Stream.of(shoes, tShirt, pants, cap)
+                .sorted(Comparator.comparing(Product::price))
+                .toList();
     }
 
     public static Optional<Product> getProduct(String productName, List<Product> store) {
